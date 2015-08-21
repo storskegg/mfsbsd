@@ -26,4 +26,8 @@ get() {
 	ftp -o $dest $ftplist
 }
 
+if [ ! -d "$dest" ]; then
+	mkdir -p $dest
+fi
+
 get $base
