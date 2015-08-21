@@ -9,7 +9,7 @@
 #
 # User-defined variables
 #
-BASE?=/cdrom/usr/freebsd-dist
+BASE?=./release/10.2-RELEASE
 KERNCONF?= GENERIC
 MFSROOT_FREE_INODES?=10%
 MFSROOT_FREE_BLOCKS?=10%
