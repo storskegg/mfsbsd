@@ -14,16 +14,10 @@ base="MANIFEST \
 	src.txz "
 
 get() {
-	ftplist=""
 	for item in $@ ; do
 		full_name=ftp://$server/$dir/$item
-		ftplist="$ftplist $full_name"
+		ftp -o $dest/$item $full_name
 	done
-
-	echo "About to get the following:"
-	echo "$ftplist"
-
-	ftp -o $dest $ftplist
 }
 
 if [ ! -d "$dest" ]; then
