@@ -18,7 +18,7 @@ MFSROOT_MAXSIZE?=80m
 # If you want to build your own kernel and make you own world, you need to set
 # -DCUSTOM or CUSTOM=1
 #
-# To make buildworld use 
+# To make buildworld use
 # -DCUSTOM -DBUILDWORLD or CUSTOM=1 BUILDWORLD=1
 #
 # To make buildkernel use
@@ -412,7 +412,7 @@ ${WRKDIR}/.genkeys_done:
 	@echo -n "Generating SSH host keys ..."
 	${_v}${SSHKEYGEN} -t rsa1 -b 1024 -f ${_DESTDIR}/etc/ssh/ssh_host_key -N '' > /dev/null
 	${_v}${SSHKEYGEN} -t dsa -f ${_DESTDIR}/etc/ssh/ssh_host_dsa_key -N '' > /dev/null
-	${_v}${SSHKEYGEN} -t rsa -f ${_DESTDIR}/etc/ssh/ssh_host_rsa_key -N '' > /dev/null
+	${_v}${SSHKEYGEN} -t rsa -b 4096 -a 251 -f ${_DESTDIR}/etc/ssh/ssh_host_rsa_key -N '' > /dev/null
 	${_v}${TOUCH} ${WRKDIR}/.genkeys_done
 	@echo " done"
 
@@ -429,8 +429,8 @@ compress-usr: install prune config genkeys customfiles boot packages ${WRKDIR}/.
 ${WRKDIR}/.compress-usr_done:
 .if !defined(ROOTHACK)
 	@echo -n "Compressing usr ..."
-	${_v}${TAR} -c -J -C ${_DESTDIR} -f ${_DESTDIR}/.usr.tar.xz usr 
-	${_v}${RM} -rf ${_DESTDIR}/usr && ${MKDIR} ${_DESTDIR}/usr 
+	${_v}${TAR} -c -J -C ${_DESTDIR} -f ${_DESTDIR}/.usr.tar.xz usr
+	${_v}${RM} -rf ${_DESTDIR}/usr && ${MKDIR} ${_DESTDIR}/usr
 .else
 	@echo -n "Compressing root ..."
 	${_v}${TAR} -c -C ${_ROOTDIR} -f - rw | \

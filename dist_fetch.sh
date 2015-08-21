@@ -32,5 +32,4 @@ fi
 cp /usr/local/sbin/pkg-static ./tools
 get $base
 
-make
-
+make BASE=./release/10.2-RELEASE RELEASE=10.2-RELEASE ARCH=amd64
