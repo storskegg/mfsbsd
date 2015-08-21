@@ -300,8 +300,11 @@ packages: install prune ${WRKDIR}/.packages_done
 ${WRKDIR}/.packages_done:
 	@echo -n "Installing pkgng ..."
 .  if !exists(${PKG_STATIC})
-	@echo "pkg-static not found at: ${PKG_STATIC}"
-	${_v}exit 1
+	${_v}cp /usr/local/sbin/pkg-static ${PKG_STATIC}
+.    if !exists(${PKG_STATIC})
+		@echo "pkg-static not found at: ${PKG_STATIC}"
+		${_v}exit 1
+.    endif
 .  endif
 	${_v}mkdir -p ${_DESTDIR}/usr/local/sbin
 	${_v}${INSTALL} -o root -g wheel -m 0755 ${PKG_STATIC} ${_DESTDIR}/usr/local/sbin/
