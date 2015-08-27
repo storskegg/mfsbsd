@@ -1,7 +1,7 @@
 # $Id$
 #
 # mfsBSD
-# Copyright (c) 2007-2013 Martin Matuska <mm at FreeBSD.org>
+# Copyright (c) 2007-2015 Martin Matuska <mm at FreeBSD.org>
 #
 # Version 2.1
 #
@@ -13,7 +13,7 @@ BASE?=/cdrom/usr/freebsd-dist
 KERNCONF?= GENERIC
 MFSROOT_FREE_INODES?=10%
 MFSROOT_FREE_BLOCKS?=10%
-MFSROOT_MAXSIZE?=64m
+MFSROOT_MAXSIZE?=80m
 
 # If you want to build your own kernel and make you own world, you need to set
 # -DCUSTOM or CUSTOM=1
@@ -84,8 +84,10 @@ MFSMODULES=geom_mirror geom_nop opensolaris zfs ext2fs snp smbus ipmi ntfs nullf
 
 .if defined(V)
 _v=
+VERB=1
 .else
 _v=@
+VERB=
 .endif
 
 .if !defined(ARCH)
@@ -456,7 +458,8 @@ ${WRKDIR}/.boot_done:
 	${_v}${MKDIR} ${WRKDIR}/disk/boot && ${CHOWN} root:wheel ${WRKDIR}/disk
 	${_v}${RM} -f ${_BOOTDIR}/kernel/kernel.debug
 	${_v}${CP} -rp ${_BOOTDIR}/kernel ${WRKDIR}/disk/boot
-.for FILE in boot defaults loader loader.help *.rc *.4th
+	${_v}${CP} -rp ${_DESTDIR}/boot.config ${WRKDIR}/disk
+.for FILE in boot defaults device.hints loader loader.help *.rc *.4th
 	${_v}${CP} -rp ${_DESTDIR}/boot/${FILE} ${WRKDIR}/disk/boot
 .endfor
 	${_v}${RM} -rf ${WRKDIR}/disk/boot/kernel/*.ko ${WRKDIR}/disk/boot/kernel/*.symbols
@@ -500,7 +503,7 @@ ${WRKDIR}/.mfsroot_done:
 	@echo -n "Creating and compressing mfsroot ..."
 	${_v}${MKDIR} ${WRKDIR}/mnt
 	${_v}${MAKEFS} -t ffs -m ${MFSROOT_MAXSIZE} -f ${MFSROOT_FREE_INODES} -b ${MFSROOT_FREE_BLOCKS} ${WRKDIR}/disk/mfsroot ${_ROOTDIR} > /dev/null
-	${_v}${RM} -rf ${WRKDIR}/mnt ${_DESTDIR}
+	${_v}${RM} -rf ${WRKDIR}/mnt
 	${_v}${GZIP} -9 -f ${WRKDIR}/disk/mfsroot
 	${_v}${GZIP} -9 -f ${WRKDIR}/disk/boot/kernel/kernel
 	${_v}if [ -f "${CFGDIR}/loader.conf" ]; then \
@@ -523,13 +526,17 @@ ${WRKDIR}/.fbsddist_done:
 image: install prune config genkeys customfiles boot compress-usr mfsroot fbsddist ${IMAGE}
 ${IMAGE}:
 	@echo -n "Creating image file ..."
+.if defined(BSDPART)
 	${_v}${MKDIR} ${WRKDIR}/mnt ${WRKDIR}/trees/base/boot
 	${_v}${INSTALL} -m 0444 ${WRKDIR}/disk/boot/boot ${WRKDIR}/trees/base/boot/
 	${_v}${DOFS} ${BSDLABEL} "" ${WRKDIR}/disk.img ${WRKDIR} ${WRKDIR}/mnt 0 ${WRKDIR}/disk 80000 auto > /dev/null 2> /dev/null
 	${_v}${RM} -rf ${WRKDIR}/mnt ${WRKDIR}/trees
-	${_v}${MV} ${WRKDIR}/disk.img ${IMAGE}
+	${_v}${MV} ${WRKDIR}/disk.img ${.TARGET}
+.else
+	${_v}${TOOLSDIR}/do_gpt.sh ${.TARGET} ${WRKDIR}/disk 0 ${_ROOTDIR}/boot ${VERB}
+.endif
 	@echo " done"
-	${_v}${LS} -l ${IMAGE}
+	${_v}${LS} -l ${.TARGET}
 
 gce: install prune config genkeys customfiles boot compress-usr mfsroot fbsddist ${IMAGE} ${GCEFILE}
 ${GCEFILE}:
