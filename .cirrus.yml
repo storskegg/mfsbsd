@@ -1,0 +1,18 @@
+env:
+  CIRRUS_CLONE_DEPTH: 1
+  ARCH: amd64
+
+build_task:
+  matrix:
+    freebsd_instance:
+      image_family: freebsd-14-2
+    freebsd_instance:
+      image_family: freebsd-13-5
+  prepare_script:
+  - ci/ci.sh -b prepare
+  build_std_script:
+  - ci/ci.sh -b build-std
+  build_se_script:
+  - ci/ci.sh -b build-se
+  build_mini_script:
+  - ci/ci.sh -b build-mini

@@ -1,7 +1,8 @@
-mfsBSD
-=========
+# mfsBSD
 
-Copyright (c) 2007-2015 Martin Matuska <mm at FreeBSD.org>
+Copyright (c) 2019 Martin Matuska <mm at FreeBSD.org>
+
+Version 2.4
 
 ## Description
 
@@ -14,16 +15,15 @@ e.g. a hard disk or a USB stick e.g. /dev/da0, or a bootable slice only,
 e.g. /dev/ada0s1
 
 ## Build-time requirements
- - FreeBSD 8 or higher installed, tested on i386 or amd64
- - Base and kernel from a FreeBSD 8 or higher distribution
-   (release or snapshots, e.g mounted CDROM disc1 or ISO file)
+ - FreeBSD 11 or higher installed, tested on i386 or amd64
+ - base.txz and kernel.txz from a FreeBSD 11 or higher distribution
 
 ## Runtime requirements
  - a minimum of 512MB system memory
 
 ## Other information
 
-See BUILD and INSTALL files for building and installation instructions.
+See [BUILD](./BUILD.md) and [INSTALL](./INSTALL.md) for building and installation instructions.
 
 Project homepage: http://mfsbsd.vx.sk
 

@@ -1,7 +1,6 @@
-mfsBSD-mini
-===========
+# mfsBSD-mini
 
-Copyright (c) 2015 Martin Matuska <mm at FreeBSD.org>
+Copyright (c) 2019 Martin Matuska <mm at FreeBSD.org>
 
 ## Description
 
@@ -15,6 +14,6 @@ e.g. /dev/ada0p2
 
 ## Building
 
-You need to do "make extract" in the main mfsBSD directory 
+You need to do "make prepare-mini" in the main mfsBSD directory
 
 Project homepage: http://mfsbsd.vx.sk

@@ -6,7 +6,8 @@ FSIMG=$1
 FSPROTO=$2
 FSSIZE=$3
 BOOTDIR=$4
-VERBOSE=$5
+EFIIMG=$5
+VERBOSE=$6
 
 FSLABEL="auto"
 
@@ -36,7 +37,7 @@ if [ ${FSSIZE} -eq 0 -a ${FSLABEL} = "auto" ]; then
 	nf=$(find ${FSPROTO} |wc -l)
 	sk=$(du -skA ${FSPROTO} |cut -f1)
 	FSSIZE=$(roundup $(($sk*12/10)) 1024)
-	IMG_SIZE=$((${FSSIZE}+32))
+	IMG_SIZE=$((${FSSIZE}+128))
 fi
 
 if [ -n "$VERBOSE" ]; then
@@ -60,13 +61,21 @@ if [ -n "$VERBOSE" ]; then
 else
   TIME=
 fi
-gpart create -s gpt ${unit}
-gpart add -t freebsd-boot -b 34 -l boot -s 512K ${unit}
-gpart bootcode -b ${BOOTDIR}/pmbr -p ${BOOTDIR}/gptboot -i 1 ${unit}
-gpart add -t freebsd-ufs -l rootfs ${unit}
 
+gpart create -s gpt ${unit}
+gpart add -t freebsd-boot -b 40 -l boot -s 472 ${unit}
+gpart bootcode -b ${BOOTDIR}/pmbr -p ${BOOTDIR}/gptboot -i 1 ${unit}
+if [ -n "${EFIIMG}" -a -f "${EFIIMG}" ]; then
+  gpart add -t efi -s 2m ${unit}
+  ${TIME} dd if=${EFIIMG} of=/dev/${unit}p2 bs=128k
+fi
+gpart add -t freebsd-ufs -l rootfs ${unit}
 ${TIME} makefs -B little ${TMPIMG} ${FSPROTO}
-${TIME} dd if=${TMPIMG} of=/dev/${unit}p2 bs=128k
+if [ -f ${EFIIMG} ]; then
+  ${TIME} dd if=${TMPIMG} of=/dev/${unit}p3 bs=128k
+else
+  ${TIME} dd if=${TMPIMG} of=/dev/${unit}p2 bs=128k
+fi
 
 if [ -n "$VERBOSE" ]; then
   set +x
